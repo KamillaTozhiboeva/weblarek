@@ -1,6 +1,7 @@
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
-type TPayment = 'card' | 'cash';
+// 1. Добавлен export для TPayment, чтобы тип был доступен в других модулях
+export type TPayment = 'card' | 'cash';
 
 export interface IApi {
     get<T extends object>(uri: string): Promise<T>;
@@ -23,13 +24,9 @@ export interface IBuyer {
     address: string;
 }
 
-export type IErrorsBuyer = {
-  payment?: string;
-  address?: string;
-  email?: string;
-  phone?: string;
-};
-
+// 2. Исправлено дублирование: тип IErrorsBuyer теперь динамически 
+// строится на основе ключей интерфейса IBuyer
+export type IErrorsBuyer = Partial<Record<keyof IBuyer, string>>;
 
 export interface ICatalogFromApi {
     total: number;

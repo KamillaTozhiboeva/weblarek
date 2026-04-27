@@ -1,67 +1,46 @@
-import type { IBuyer, IErrorsBuyer } from "../../types";
+import { IBuyer, TPayment } from "../../types";
 
-// Строго типизированные пустые данные, соответствующие IBuyer
-const emptyBuyerData = {
-  payment: null,
-  address: "",
-  phone: "",
-  email: "",
-};
+// Тип для ошибок формы (ключ — поле, значение — текст ошибки)
+export type IErrorsBuyer = Partial<Record<keyof IBuyer, string>>;
+
 export class Buyer {
-  private buyer: IBuyer;
-
-  constructor() {
-    this.buyer = { ...emptyBuyerData };
-  }
-
-  get buyerData(): IBuyer {
-    return this.buyer;
-  }
-
-  set buyerData(buyer: Partial<IBuyer>) {
-    // Обеспечиваем, что все обязательные поля присутствуют
-    this.buyer = {
-      ...this.buyer,
-      ...buyer,
+    private _buyer: IBuyer = {
+        payment: '',
+        address: '',
+        email: '',
+        phone: ''
     };
-  }
 
-  clearBuyerData(): void {
-    this.buyer = { ...emptyBuyerData };
-  }
-
-  validateForm(): IErrorsBuyer {
-    const errors: IErrorsBuyer = {};
-
-    // Валидация адреса
-    if (!this.buyer.address.trim()) {
-      errors.address = 'Поле "Адрес" не может быть пустым';
+    // Геттер и сеттер для данных покупателя
+    get buyerData(): IBuyer {
+        return this._buyer;
     }
 
-    // Валидация телефона (простая проверка формата)
-    if (!this.buyer.phone.trim()) {
-      errors.phone = 'Поле "Телефон" не может быть пустым';
-    } else if (!/^[\d\s\-\+\(\)]{10,}$/.test(this.buyer.phone)) {
-      errors.phone = "Введите корректный номер телефона";
+    set buyerData(data: Partial<IBuyer>) {
+        this._buyer = { ...this._buyer, ...data };
     }
 
-    // Валидация email
-    if (!this.buyer.email.trim()) {
-      errors.email = 'Поле "Эл. почта" не может быть пустым';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.buyer.email)) {
-      errors.email = "Введите корректный адрес электронной почты";
+    // Очистка данных
+    clearBuyerData(): void {
+        this._buyer = { payment: '', address: '', email: '', phone: '' };
     }
 
-    // Валидация способа оплаты
-    if (this.buyer.payment === null) {
-      errors.payment = "Выберите способ оплаты";
+    // Валидация полей формы
+    validateForm(): IErrorsBuyer {
+        const errors: IErrorsBuyer = {};
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^[\d\s\-\+\(\)]{10,}$/;
+
+        if (!this._buyer.address.trim()) errors.address = 'Укажите адрес доставки';
+        if (!this._buyer.payment) errors.payment = 'Выберите способ оплаты';
+        if (!emailRegex.test(this._buyer.email)) errors.email = 'Некорректный email';
+        if (!phoneRegex.test(this._buyer.phone)) errors.phone = 'Некорректный формат телефона';
+
+        return errors;
     }
 
-    return errors;
-  }
-
-  // Дополнительный метод: проверка, заполнены ли все данные без ошибок
-  isValid(): boolean {
-    return Object.keys(this.validateForm()).length === 0;
-  }
+    // Проверка на общую валидность
+    isValid(): boolean {
+        return Object.keys(this.validateForm()).length === 0;
+    }
 }

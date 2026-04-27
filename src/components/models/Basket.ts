@@ -1,101 +1,40 @@
-import type { IProduct } from "../../types";
+import { IProduct } from "../../types";
 
-interface BasketItem {
-  product: IProduct;
-  quantity: number;
-}
+export type BasketItem = IProduct & { quantity: number };
 
 export class Basket {
-  private items: BasketItem[] = [];
-  private readonly maxQuantityPerItem: number = 99;
+    private _items: BasketItem[] = [];
 
-  //Геттер для товаров (возвращает копию массива)
-  get products(): readonly BasketItem[] {
-    return [...this.items];
-  }
-
-  // Добавление товара (увеличивает количество, если товар уже есть)
-  addItemInBasket(product: IProduct, quantity: number = 1): void {
-    if (quantity < 1) {
-      throw new Error("Колличество должно быть положительным числом");
+    get items(): readonly BasketItem[] {
+        return this._items;
     }
 
-    const existingItem = this.items.find(
-      (item) => item.product.id === product.id,
-    );
-
-    if (existingItem) {
-      const newQuantity = existingItem.quantity + quantity;
-      if (newQuantity > this.maxQuantityPerItem) {
-        throw new Error(
-          `Нельзя добавить больше {this.maxQuantityPerItem} единиц товара`,
-        );
-      }
-      existingItem.quantity = newQuantity;
-    } else {
-      this.items.push({ product, quantity });
-    }
-  }
-
-  // Обновление количества товара
-  updateQuantity(productId: string, quantity: number): void {
-    if (quantity < 1) {
-      throw new Error("Количество должно быть положительным числом");
-    }
-    if (quantity > this.maxQuantityPerItem) {
-      throw new Error(
-        `Максимальное количество — ${this.maxQuantityPerItem} единиц`,
-      );
+    get totalPrice(): number {
+        return this._items.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0);
     }
 
-    const item = this.items.find((item) => item.product.id === productId);
-    if (!item) {
-      throw new Error("Товар не найден в корзине");
+    get itemCount(): number {
+        return this._items.length;
     }
 
-    item.quantity = quantity;
-  }
+    addItem(product: IProduct, quantity: number = 1): void {
+        const existing = this._items.find(item => item.id === product.id);
+        if (existing) {
+            existing.quantity += quantity;
+        } else {
+            this._items.push({ ...product, quantity });
+        }
+    }
 
-  // Удаление товара из корзины
-  removeItem(productId: string): void {
-    this.items = this.items.filter((item) => item.product.id !== productId);
-  }
+    removeItem(productId: string): void {
+        this._items = this._items.filter(item => item.id !== productId);
+    }
 
-  // Очистка корзины
-  clear(): void {
-    this.items = [];
-  }
+    clear(): void {
+        this._items = [];
+    }
 
-  // Подсчёт общего количества товаров (с учётом количества каждого)
-  get totalQuantity(): number {
-    return this.items.reduce((total, item) => total + item.quantity, 0);
-  }
-
-  // Подсчёт общей стоимости (цена × количество для каждого товара)
-  get totalPrice(): number {
-    return this.items.reduce((total, item) => {
-      const price = item.product.price ?? 0;
-      return total + price * item.quantity;
-    }, 0);
-  }
-
-  // Проверка, пуста ли корзина
-  get isEmpty(): boolean {
-    return this.items.length === 0;
-  }
-
-  // Получение количества уникальных товаров (позиций)
-  get itemCount(): number {
-    return this.items.length;
-  }
-
-  // Проверка наличия товара в корзине
-  hasProduct(productId: string): boolean {
-    return this.items.some((item) => item.product.id === productId);
-  }
-
-  // Поиск товара по ID
-  findItem(productId: string): BasketItem | undefined {
-    return this.items.find((item) => item.product.id === productId);
-  }
+    hasProduct(productId: string): boolean {
+        return this._items.some(item => item.id === productId);
+    }
 }
