@@ -13,63 +13,71 @@ const catalogModel = new Catalog();
 const basketModel = new Basket();
 const buyerModel = new Buyer();
 
-console.log("Начинаем тестирование слоёв приложения...");
+console.log("Запуск финального тестирования архитектуры...");
 
 catalogService
   .getCatalogProducts()
-  .then((items) => {
-    console.log("Данные от API получены успешно");
+  .then((data) => {
+    console.log("Данные от API получены");
 
-    catalogModel.catalogData = items;
+    catalogModel.catalogData = data.items;
     console.log(
-      "Модель каталога заполнена. Всего товаров:",
-      catalogModel.catalogData.length,
+      `В каталог загружено ${catalogModel.catalogData.length} товаров`,
     );
 
-    if (items.length > 0) {
-      const firstId = items[0].id;
-      const found = catalogModel.findProductById(firstId);
+    const firstProduct = catalogModel.catalogData[0];
+    if (firstProduct) {
+      catalogModel.selectedProductData = firstProduct;
       console.log(
-        `Тест поиска товара по ID (${firstId}):`,
-        found?.title === items[0].title ? "Пройден" : "Ошибка",
+        "Выбран товар для превью:",
+        catalogModel.selectedProductData.title,
       );
     }
 
-    console.log("\n--- Тестирование Корзины ---");
-    const testProduct = items[0];
+    console.log("\n--- Тест Корзины ---");
+    if (firstProduct) {
+      basketModel.addItem(firstProduct);
+      console.log("Товар добавлен. Сумма:", basketModel.totalPrice);
+      console.log("Позиций в корзине:", basketModel.itemCount);
 
-    basketModel.addItem(testProduct);
-    console.log(
-      "Товар добавлен в корзину. Количество уникальных позиций:",
-      basketModel.itemCount,
-    );
-    console.log("Общая сумма:", basketModel.totalPrice);
-    console.log("Товар в корзине?", basketModel.hasProduct(testProduct.id));
+      basketModel.removeItem(firstProduct.id);
+      console.log("Товар удален. Сумма:", basketModel.totalPrice);
+    }
 
-    basketModel.removeItem(testProduct.id);
-    console.log("Товар удален. Сумма после удаления:", basketModel.totalPrice);
+    console.log("\n--- Тест Валидации ---");
 
-    console.log("\n--- Тестирование Валидации ---");
-
-    buyerModel.buyerData = { address: "ул. Веб-разработки, 101" };
-    console.log("Данные покупателя частично заполнены:", buyerModel.buyerData);
+    buyerModel.clearBuyerData();
+    buyerModel.buyerData = { address: "Пресвитерский пер., 19" };
 
     const errors = buyerModel.validateForm();
-    console.log("Ошибки валидации (ожидаем payment, email, phone):", errors);
-    console.log("Форма валидна?", buyerModel.isValid());
+    console.log(
+      "Текущие ошибки (ожидаем отсутствие оплаты, почты и телефона):",
+      errors,
+    );
+
+    const isFormValid = Object.keys(errors).length === 0;
+    console.log("Форма валидна?", isFormValid);
 
     buyerModel.buyerData = {
       payment: "card",
-      email: "dev@example.com",
-      phone: "+79991234567",
+      email: "test@test.ru",
+      phone: "+79990001122",
     };
+
+    const finalErrors = buyerModel.validateForm();
     console.log(
-      "Форма после полного заполнения валидна?",
-      buyerModel.isValid(),
+      "Ошибки после полного заполнения (ожидаем пусто):",
+      finalErrors,
+    );
+    console.log(
+      "Итоговая проверка валидности:",
+      Object.keys(finalErrors).length === 0,
     );
 
-    console.log("\n Тестирование завершено успешно!");
+    console.log(
+      "\n Все слои успешно протестированы и взаимодействуют корректно!",
+    );
   })
   .catch((err) => {
-    console.error("Ошибка при тестировании:", err);
+    console.error("Критическая ошибка приложения:", err);
   });

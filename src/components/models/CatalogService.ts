@@ -1,20 +1,18 @@
 import { IApi } from "../base/api";
-import { IProduct, IOrder, IOrderResult } from "../../types";
+import { ICatalogFromApi, IOrder, IOrderResult } from "../../types";
 
 export class CatalogService {
-    constructor(private _api: IApi) {}
+  private _api: IApi;
 
-    async getCatalogProducts(): Promise<IProduct[]> {
-        return this._api.get('/product')
-            .then((data: { items: IProduct[] }) => data.items)
-            .catch(err => {
-                console.error(err);
-                throw new Error('Не удалось загрузить каталог');
-            });
-    }
+  constructor(api: IApi) {
+    this._api = api;
+  }
 
-    async postOrder(order: IOrder): Promise<IOrderResult> {
-        return this._api.post('/order', order)
-            .then((data: IOrderResult) => data);
-    }
+  async getCatalogProducts(): Promise<ICatalogFromApi> {
+    return this._api.get<ICatalogFromApi>("/product");
+  }
+
+  async postOrder(order: IOrder): Promise<IOrderResult> {
+    return this._api.post<IOrderResult>("/order", order);
+  }
 }

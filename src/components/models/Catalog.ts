@@ -1,35 +1,33 @@
 import { IProduct } from "../../types";
 
 export class Catalog {
-    private _products: IProduct[] = [];
-    private _selectedProduct: IProduct | null = null;
+  private _products: IProduct[] = [];
+  private _selectedProduct: IProduct | null = null;
 
-    constructor(initialProducts: IProduct[] = []) {
-        this._products = [...initialProducts];
-    }
+  constructor() {}
 
-    set catalogData(products: IProduct[]) {
-        this._products = [...products];
-    }
+  set catalogData(products: IProduct[]) {
+    this._products = products;
+  }
 
-    get catalogData(): readonly IProduct[] {
-        return this._products;
-    }
+  get catalogData(): readonly IProduct[] {
+    return this._products;
+  }
 
-    set selectedProductData(product: IProduct | null) {
-        this._selectedProduct = product;
-    }
+  set selectedProductData(product: IProduct | null) {
+    this._selectedProduct = product;
+  }
 
-    get selectedProductData(): IProduct | null {
-        return this._selectedProduct;
-    }
+  get selectedProductData(): IProduct | null {
+    return this._selectedProduct;
+  }
 
-    findProductById(productId: string): IProduct | null {
-        return this._products.find(p => p.id === productId) || null;
-    }
+  findProductById(productId: string): IProduct | null {
+    return this._products.find((p) => p.id === productId) || null;
+  }
 
-    clearCatalog(): void {
-        this._products = [];
-        this._selectedProduct = null;
-    }
+  clearCatalog(): void {
+    this._products = [];
+    this._selectedProduct = null;
+  }
 }
