@@ -4,7 +4,7 @@ export type IErrorsBuyer = Partial<Record<keyof IBuyer, string>>;
 
 export class Buyer {
   private _buyer: IBuyer = {
-    payment: "",
+    payment: null,
     address: "",
     email: "",
     phone: "",
@@ -19,7 +19,7 @@ export class Buyer {
   }
 
   clearBuyerData(): void {
-    this._buyer = { payment: "", address: "", email: "", phone: "" };
+    this._buyer = { payment: null, address: "", email: "", phone: "" };
   }
 
   // Теперь метод проверяет только на наличие текста (не пустая строка)

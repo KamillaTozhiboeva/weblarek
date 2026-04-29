@@ -1,4 +1,3 @@
-import { IApi } from "../base/api";
 import { ICatalogFromApi, IOrder, IOrderResult } from "../../types";
 
 export class CatalogService {
@@ -16,3 +15,5 @@ export class CatalogService {
     return this._api.post<IOrderResult>("/order", order);
   }
 }
+
+import { IApi } from "../base/api";
