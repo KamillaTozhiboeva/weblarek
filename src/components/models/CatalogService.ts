@@ -16,4 +16,4 @@ export class CatalogService {
   }
 }
 
-import { IApi } from "../base/api";
+import { IApi } from "../../types";
