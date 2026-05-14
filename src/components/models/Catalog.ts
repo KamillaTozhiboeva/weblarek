@@ -1,13 +1,15 @@
 import { IProduct } from "../../types";
+import { IEvents } from "../base/Events";
 
 export class Catalog {
   private _products: IProduct[] = [];
   private _selectedProduct: IProduct | null = null;
 
-  constructor() {}
+  constructor(protected events: IEvents) {}
 
   set catalogData(products: IProduct[]) {
     this._products = products;
+    this.events.emit('items:changed', { items: this._products });
   }
 
   get catalogData(): readonly IProduct[] {

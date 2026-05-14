@@ -24,8 +24,6 @@ export interface IBuyer {
     address: string;
 }
 
-// 2. Исправлено дублирование: тип IErrorsBuyer теперь динамически 
-// строится на основе ключей интерфейса IBuyer
 export type IErrorsBuyer = Partial<Record<keyof IBuyer, string>>;
 
 export interface ICatalogFromApi {
@@ -36,6 +34,11 @@ export interface ICatalogFromApi {
 export interface IOrder extends IBuyer {
     total: number;
     items: string[];
+}
+
+export interface IOrderForm {
+    payment: string;
+    address: string;
 }
 
 export interface IOrderResult {

@@ -1,33 +1,40 @@
 import { IProduct } from "../../types";
+import { IEvents } from "../base/Events";
 
 export class Basket {
-  private _items: IProduct[] = [];
+    private _items: IProduct[] = [];
 
-  get items(): readonly IProduct[] {
-    return this._items;
-  }
+    constructor(protected events: IEvents) {}
 
-  get totalPrice(): number {
-    return this._items.reduce((sum, item) => sum + (item.price || 0), 0);
-  }
+    get items(): readonly IProduct[] {
+        return this._items;
+    }
 
-  get itemCount(): number {
-    return this._items.length;
-  }
+    get totalPrice(): number {
+        return this._items.reduce((sum, item) => sum + (item.price || 0), 0);
+    }
 
-  addItem(product: IProduct): void {
-    this._items.push(product);
-  }
+    addItem(product: IProduct): void {
+        // Требование: товары без цены покупать нельзя
+        if (product.price === null) return;
+        
+        if (!this.hasProduct(product.id)) {
+            this._items.push(product);
+            this.events.emit('basket:changed');
+        }
+    }
 
-  removeItem(productId: string): void {
-    this._items = this._items.filter((item) => item.id !== productId);
-  }
+    removeItem(productId: string): void {
+        this._items = this._items.filter((item) => item.id !== productId);
+        this.events.emit('basket:changed');
+    }
 
-  clear(): void {
-    this._items = [];
-  }
+    clearBasket(): void {
+        this._items = [];
+        this.events.emit('basket:changed');
+    }
 
-  hasProduct(productId: string): boolean {
-    return this._items.some((item) => item.id === productId);
-  }
+    hasProduct(productId: string): boolean {
+        return this._items.some((item) => item.id === productId);
+    }
 }
