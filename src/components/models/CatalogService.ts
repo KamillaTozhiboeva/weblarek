@@ -1,4 +1,5 @@
-import { ICatalogFromApi, IOrder, IOrderResult } from "../../types";
+import { IApi, ICatalogFromApi, IProduct } from "../../types";
+import { CDN_URL } from "../../utils/constants"; // Импортируем базовый URL картинок
 
 export class CatalogService {
   private _api: IApi;
@@ -7,13 +8,13 @@ export class CatalogService {
     this._api = api;
   }
 
-  async getCatalogProducts(): Promise<ICatalogFromApi> {
-    return this._api.get<ICatalogFromApi>("/product");
-  }
-
-  async postOrder(order: IOrder): Promise<IOrderResult> {
-    return this._api.post<IOrderResult>("/order", order);
+  async getProducts(): Promise<IProduct[]> {
+    return this._api.get<ICatalogFromApi>("/product")
+      .then((data: ICatalogFromApi) => 
+        data.items.map(item => ({
+          ...item,
+          image: item.image // Собираем полный путь к картинке
+        }))
+      );
   }
 }
-
-import { IApi } from "../../types";

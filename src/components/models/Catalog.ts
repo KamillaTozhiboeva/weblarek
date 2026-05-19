@@ -2,34 +2,28 @@ import { IProduct } from "../../types";
 import { IEvents } from "../base/Events";
 
 export class Catalog {
-  private _products: IProduct[] = [];
-  private _selectedProduct: IProduct | null = null;
+    protected _catalogData: IProduct[] = [];
+    protected _preview: IProduct | null = null;
 
-  constructor(protected events: IEvents) {}
+    constructor(protected events: IEvents) {}
 
-  set catalogData(products: IProduct[]) {
-    this._products = products;
-    this.events.emit('items:changed', { items: this._products });
-  }
+    // ЭТОТ МЕТОД НУЖЕН ДЛЯ ИСПРАВЛЕНИЯ ОШИБКИ
+    setItems(items: IProduct[]) {
+        this._catalogData = items;
+        // Уведомляем презентер, что данные изменились, чтобы он отрисовал их на странице
+        this.events.emit('items:changed', { items: this._catalogData });
+    }
 
-  get catalogData(): readonly IProduct[] {
-    return this._products;
-  }
+    get catalogData() {
+        return this._catalogData;
+    }
 
-  set selectedProductData(product: IProduct | null) {
-    this._selectedProduct = product;
-  }
+    setPreview(item: IProduct) {
+        this._preview = item;
+        this.events.emit('preview:changed', item);
+    }
 
-  get selectedProductData(): IProduct | null {
-    return this._selectedProduct;
-  }
-
-  findProductById(productId: string): IProduct | null {
-    return this._products.find((p) => p.id === productId) || null;
-  }
-
-  clearCatalog(): void {
-    this._products = [];
-    this._selectedProduct = null;
-  }
+    get preview() {
+        return this._preview;
+    }
 }
