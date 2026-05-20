@@ -4,7 +4,7 @@ import { IEvents } from "../base/Events";
 
 interface IBasketView {
     items: HTMLElement[];
-    total: number;
+    totalPrice: number;
 }
 
 export class BasketView extends Component<IBasketView> {
@@ -23,22 +23,24 @@ export class BasketView extends Component<IBasketView> {
             this.events.emit('order:open');
         });
 
-        this.items = []; // Инициализируем пустым списком
+        this.items = []; 
     }
 
     set items(items: HTMLElement[]) {
         if (items.length > 0) {
             this._list.replaceChildren(...items);
-            this.setDisabled(this._button, false);
+            this.setDisabled(this._button, false); 
         } else {
-            this._list.replaceChildren(createElement('p', {
-                textContent: 'Корзина пуста'
-            }));
+           
+            const emptyNotice = document.createElement('p');
+            emptyNotice.textContent = 'Корзина пуста';
+            this._list.replaceChildren(emptyNotice);
             this.setDisabled(this._button, true);
         }
     }
 
-    set total(total: number) {
-        this.setText(this._total, `${total} синапсов`);
+  
+    set totalPrice(value: number) {
+        this.setText(this._total, `${value} синапсов`);
     }
 }

@@ -41,35 +41,18 @@ export class Buyer {
     /**
      * Валидация всех полей формы
      */
-    validateForm(): IErrorsBuyer {
-        const errors: IErrorsBuyer = {};
+ validateForm(): IErrorsBuyer { 
+        const errors: IErrorsBuyer = {}; 
+ 
+        if (!this._buyer.address.trim()) errors.address = "Укажите адрес доставки"; 
+        if (!this._buyer.payment) errors.payment = "Выберите способ оплаты"; 
+        if (!this._buyer.email.trim()) errors.email = "Укажите email"; 
+        if (!this._buyer.phone.trim()) errors.phone = "Укажите телефон"; 
+ 
+        this.events.emit('formErrors:change', errors); 
+        return errors; 
+    } 
 
-        // Проверка адреса
-        if (!this._buyer.address?.trim()) {
-            errors.address = "Укажите адрес доставки";
-        }
-
-        // Проверка способа оплаты
-        if (!this._buyer.payment) {
-            errors.payment = "Выберите способ оплаты";
-        }
-
-        // Проверка email (базовая проверка на @)
-        if (!this._buyer.email?.trim()) {
-            errors.email = "Укажите email";
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this._buyer.email)) {
-            errors.email = "Некорректный формат email";
-        }
-
-        // Проверка телефона (базовая проверка на цифры)
-        if (!this._buyer.phone?.trim()) {
-            errors.phone = "Укажите номер телефона";
-        } else if (!/^\+?[0-9]{10,12}$/.test(this._buyer.phone.replace(/[\s()-]/g, ''))) {
-            errors.phone = "Некорректный формат телефона";
-        }
-
-        return errors;
-    }
 
     /**
      * Очистка данных покупателя

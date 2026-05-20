@@ -1,41 +1,46 @@
-import { Form } from "../view/Form"; // Убедитесь, что путь к базовой форме верный
-import { IOrderForm } from "../../types";
-import { IEvents } from "../base/Events";
+import { Form } from "../view/Form";
+import { IBuyer } from "../../types";
 import { ensureElement } from "../../utils/utils";
 
-export class Order extends Form<IOrderForm> {
-    protected _card: HTMLButtonElement;
-    protected _cash: HTMLButtonElement;
+export class Order extends Form<IBuyer> {
+  protected _card: HTMLButtonElement;
+  protected _cash: HTMLButtonElement;
 
-    constructor(container: HTMLFormElement, events: IEvents) {
-        super(container, events);
+  constructor(container: HTMLFormElement, events: any) {
+    super(container, events);
 
-        this._card = ensureElement<HTMLButtonElement>('button[name="card"]', container);
-        this._cash = ensureElement<HTMLButtonElement>('button[name="cash"]', container);
+    this._cardButton = ensureElement<HTMLButtonElement>(
+      'button[name="card"]',
+      container,
+    );
+    this._cashButton = ensureElement<HTMLButtonElement>(
+      'button[name="cash"]',
+      container,
+    );
 
-        // В клик листере только вызываем колбэк (через onInputChange), 
-        // не меняя состояние кнопок напрямую здесь
-        this._card.addEventListener('click', () => {
-            this.onInputChange('payment', 'card');
-        });
+    this._cardButton.addEventListener("click", () => {
+      this.payment = "card";
+      this.onInputChange("payment", "card");
+    });
 
-        this._cash.addEventListener('click', () => {
-            this.onInputChange('payment', 'cash');
-        });
+    this._cashButton.addEventListener("click", () => {
+      this.payment = "cash";
+      this.onInputChange("payment", "cash");
+    });
+  }
+
+  set payment(value: string) {
+    if (value === "card") {
+      this._cardButton.classList.add("button_alt-active");
+      this._cashButton.classList.remove("button_alt-active");
+    } else {
+      this._cashButton.classList.add("button_alt-active");
+      this._cardButton.classList.remove("button_alt-active");
     }
+  }
 
-    // Сеттер теперь единственный источник правды для отображения активной кнопки.
-    // Он будет вызван Презентером при рендере или при изменении модели.
-    set payment(value: string) {
-        // Используем toggleClass (если он есть в Component) или classList
-        this._card.classList.toggle('button_alt-active', value === 'card');
-        this._cash.classList.toggle('button_alt-active', value === 'cash');
-    }
-
-    set address(value: string) {
-        const input = this.container.elements.namedItem('address') as HTMLInputElement;
-        if (input) {
-            input.value = value;
-        }
-    }
+  set address(value: string) {
+    (this.container.elements.namedItem("address") as HTMLInputElement).value =
+      value;
+  }
 }
