@@ -7,10 +7,9 @@ export class Catalog {
 
   constructor(protected events: IEvents) {}
 
-  // ЭТОТ МЕТОД НУЖЕН ДЛЯ ИСПРАВЛЕНИЯ ОШИБКИ
   setItems(items: IProduct[]) {
     this._catalogData = items;
-    // Уведомляем презентер, что данные изменились, чтобы он отрисовал их на странице
+
     this.events.emit("items:changed", { items: this._catalogData });
   }
 

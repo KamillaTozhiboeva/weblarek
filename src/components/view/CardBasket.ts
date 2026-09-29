@@ -14,7 +14,6 @@ export class CardBasket extends Card<ICardBasket> {
   protected _button: HTMLButtonElement;
 
   constructor(container: HTMLElement, actions?: ICardBasketActions) {
-    // Передаем БЭМ-префикс 'card', но элементы разметки ищем точечно
     super("card", container);
 
     this._index = ensureElement<HTMLElement>(`.basket__item-index`, container);
