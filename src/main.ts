@@ -181,8 +181,8 @@ events.on("contacts:submit", () => {
 
       modal.render({
         content: success.render({
-          totalPrice: res.total,
-        } as any),
+          total: res.total,
+        }),
       });
     })
     .catch((err) => {
