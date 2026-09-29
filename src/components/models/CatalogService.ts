@@ -1,5 +1,4 @@
 import { IApi, ICatalogFromApi, IProduct } from "../../types";
-import { CDN_URL } from "../../utils/constants"; 
 
 export class CatalogService {
   private _api: IApi;
@@ -14,7 +13,7 @@ export class CatalogService {
       .then((data: ICatalogFromApi) =>
         data.items.map((item) => ({
           ...item,
-          image: item.image, // Собираем полный путь к картинке
+          image: item.image,
         })),
       );
   }

@@ -3,8 +3,8 @@ import { IBuyer } from "../../types";
 import { ensureElement } from "../../utils/utils";
 
 export class Order extends Form<IBuyer> {
-  protected _card: HTMLButtonElement;
-  protected _cash: HTMLButtonElement;
+  protected _cardButton: HTMLButtonElement;
+  protected _cashButton: HTMLButtonElement;
 
   constructor(container: HTMLFormElement, events: any) {
     super(container, events);
